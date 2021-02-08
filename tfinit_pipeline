@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    environment {
+        PuK = "${sh(script:'cat /etc/environment | grep my_public_key | cut -d "=" -f2', returnStdout: true).trim()}"
+        PrK = "${sh(script:'cat /etc/environment | grep my_secret_key | cut -d "=" -f2', returnStdout: true).trim()}"
+    }    
+    stages {
+        stage("Env Variables") {
+            steps {
+                sh 'TF_VAR_my_public_key=${PuK}'
+                sh 'TF_VAR_my_secret_key=${PrK}'
+                sh 'echo $TF_VAR_my_public_key'
+                sh 'echo $TF_VAR_my_secret_key'                
+                sh 'export TF_VAR_my_public_key'
+                sh 'export TF_VAR_my_secret_key'                
+            }
+        }
+        stage('Clone templates') {
+            steps {
+                sh '''#!/bin/bash
+                exists=$(ls terraform-demo/ 2>/dev/null)
+                if [ -z $exists ] 
+                then
+                  git clone https://github.com/peferso/terraform-demo.git
+                else
+                  cd terraform-demo
+                  git checkout main
+                  git fetch --all
+                  git reset --hard origin/main
+                fi
+                '''
+            }
+        }        
+        stage('Terraform init') {
+            steps {
+                sh '''#!/bin/bash
+                cd terraform-demo;
+                terraform init;
+                '''
+            }
+        }
+        
+        stage('Terraform apply') {
+            steps {
+                sh '''#!/bin/bash
+                cd terraform-demo;
+                terraform apply -auto-approve
+                '''
+            }
+        }
+        
+        stage('Terraform refresh') {
+            steps {
+                sh '''#!/bin/bash
+                cd terraform-demo;
+                terraform refresh
+                '''
+            }
+        }        
+    }
+}
