@@ -5,6 +5,7 @@ pipeline {
         TFPROJECTREPO = 'https://github.com/peferso/terraform-demo.git'
     }
     stages {
+        
         stage('Clone templates') {
             steps {
                 sh '''#!/bin/bash
@@ -22,7 +23,8 @@ pipeline {
                 fi
                 '''
             }
-        }        
+        }   
+        
         stage('Terraform init') {
             steps {
                 sh '''#!/bin/bash
