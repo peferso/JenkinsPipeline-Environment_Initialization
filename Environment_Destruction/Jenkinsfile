@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+    environment {
+        TFPROJECTFOLDER = 'terraform-demo'
+    }
+    stages {      
+      
+        stage('Terraform destroy') {
+            steps {
+                sh '''#!/bin/bash
+                cd ${TF_WORKSPACE_PATH}/${TFPROJECTFOLDER};
+                terraform destroy -auto-approve;
+                '''
+            }
+        }
+        
+    }
+}
