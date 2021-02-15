@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    
+    environment {
+        TFPROJECTFOLDER = 'terraform-demo'
+        TFPROJECTREPO = 'https://github.com/peferso/terraform-demo.git'
+    }
+    
+    stages {
+             
+        stage('Update ansible inventory') {
+            steps {
+                sh '''#!/bin/bash
+                cd ${TF_WORKSPACE_PATH}/${TFPROJECTFOLDER};
+                cd Utilities/bash-scripts
+                sudo ./update-ansible-inventory.sh -a
+                '''
+            }
+        }
+        
+        stage('Post creation tasks: configuring database server using Ansible playbook') {
+            steps {
+                sh '''#!/bin/bash
+                cd ${TF_WORKSPACE_PATH}/${TFPROJECTFOLDER};
+                cd Utilities/bash-scripts                
+                ./post-creation-tasks.sh
+                '''
+            }
+        }
+        
+    }
+}
