@@ -1,7 +1,7 @@
 pipeline {
     agent any
     triggers {
-        cron('10 14 * * *')
+        cron('*0/2 * * * *')
     }    
     environment {
         TFPROJECTFOLDER = 'terraform-demo'
